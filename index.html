@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GlobalPortalPro — Your Gateway to Global Opportunities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#030712;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);
+    --text:#f0f6ff;--muted:rgba(240,246,255,0.45);--dim:rgba(240,246,255,0.25);
+    --cyan:#38bdf8;--indigo:#818cf8;--green:#4ade80;--amber:#f59e0b;--red:#ef4444;
+    --cyan-glow:rgba(56,189,248,0.25);
+  }
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;overflow-x:hidden;}
+  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  textarea,input,select{font-family:inherit;}
+
+  /* ── Layout ── */
+  #app{min-height:100vh;position:relative;}
+  #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.6;}
+  #main{position:relative;z-index:1;padding-top:64px;min-height:100vh;padding-bottom:60px;}
+  .container{max-width:1000px;margin:0 auto;padding:24px 16px;}
+  .container-sm{max-width:720px;margin:0 auto;padding:20px 16px;}
+
+  /* ── Nav ── */
+  #nav{position:fixed;top:0;left:0;right:0;height:64px;z-index:100;background:rgba(3,7,18,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:8px;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;font-size:17px;animation:glow-pulse 3s ease infinite;}
+  .logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;background:linear-gradient(90deg,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;gap:4px;flex-wrap:nowrap;}
+  .nav-item{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--muted);white-space:nowrap;border:1px solid transparent;transition:all .2s;}
+  .nav-item:hover{color:var(--text);background:rgba(255,255,255,.06);}
+  .nav-item.active{color:var(--cyan);background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.2);}
+  .hamburger{display:none;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 13px;font-size:18px;}
+  #mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(3,7,18,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 12px;animation:slideDown .2s ease;}
+  #mobile-menu.open{display:block;}
+  .mobile-nav-item{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:500;color:var(--muted);transition:all .15s;}
+  .mobile-nav-item:hover,.mobile-nav-item.active{color:var(--cyan);background:rgba(56,189,248,.1);}
+
+  /* ── Notification ── */
+  #notif{display:none;position:fixed;top:76px;right:16px;z-index:200;background:rgba(15,23,42,.97);border:1px solid rgba(56,189,248,.35);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--cyan);max-width:320px;backdrop-filter:blur(10px);animation:notif-in .3s ease;}
+
+  /* ── Glassmorphism ── */
+  .glass{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;}
+
+  /* ── Cards ── */
+  .portal-card,.bid-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all .25s;display:flex;flex-direction:column;gap:12px;}
+  .portal-card:hover{background:rgba(255,255,255,.06);border-color:rgba(56,189,248,.22);transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+  .bid-card:hover{background:rgba(255,255,255,.055);border-color:rgba(239,68,68,.25);transform:translateY(-2px);box-shadow:0 16px 32px rgba(0,0,0,.4);}
+
+  /* ── Buttons ── */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;letter-spacing:.3px;text-decoration:none;}
+  .btn-cyan{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;box-shadow:0 4px 15px rgba(14,165,233,.35);}
+  .btn-cyan:hover{box-shadow:0 6px 25px rgba(14,165,233,.55);transform:translateY(-1px);}
+  .btn-red{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.3);}
+  .btn-red:hover{box-shadow:0 6px 20px rgba(239,68,68,.5);transform:translateY(-1px);}
+  .btn-ghost{background:rgba(255,255,255,.07);color:var(--text);border:1px solid rgba(255,255,255,.12);}
+  .btn-ghost:hover{background:rgba(255,255,255,.12);}
+  .btn-indigo{background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;box-shadow:0 4px 15px rgba(129,140,248,.35);}
+  .btn-indigo:hover{box-shadow:0 6px 25px rgba(129,140,248,.55);transform:translateY(-1px);}
+
+  /* ── Inputs ── */
+  .input-field{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-size:14px;padding:11px 14px;outline:none;transition:border .2s;}
+  .input-field:focus{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.04);}
+  .input-field::placeholder{color:var(--dim);}
+  select.input-field option{background:#0f172a;}
+  textarea.input-field{resize:none;}
+
+  /* ── Tags ── */
+  .tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;}
+
+  /* ── Grids ── */
+  .grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .grid-bids{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
+  .grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;}
+  .grid-quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+
+  /* ── Stat cards ── */
+  .stat-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:18px 22px;text-align:center;transition:all .2s;}
+  .stat-card:hover{background:rgba(255,255,255,.055);border-color:rgba(56,189,248,.2);}
+  .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--cyan);}
+  .stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+
+  /* ── Quick nav ── */
+  .quick-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 14px;border-radius:16px;cursor:pointer;transition:all .25s;border:1px solid var(--border);background:rgba(255,255,255,.03);text-align:center;}
+  .quick-btn:hover{transform:translateY(-4px);border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.07);}
+  .q-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .q-label{font-weight:600;font-size:13px;}
+  .q-sub{font-size:11px;color:var(--dim);}
+
+  /* ── Section header ── */
+  .section-head{padding:22px 24px;border-radius:18px;margin-bottom:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .head-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .head-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .head-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  /* ── Bid extras ── */
+  .bid-value{font-weight:800;font-size:17px;color:var(--green);}
+  .bid-deadline{font-weight:600;font-size:13px;color:var(--amber);}
+  .bid-meta{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+  .bid-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+  .status-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--green);}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 6px var(--green);}
+  .region-pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted);}
+  .region-pill.active{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.15);color:#fca5a5;}
+  .region-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+
+  /* ── Home preview ── */
+  .preview-box{border-radius:16px;overflow:hidden;border:1px solid rgba(239,68,68,.2);background:rgba(239,68,68,.04);}
+  .preview-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .preview-row{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;background:rgba(255,255,255,.02);gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+
+  /* ── Chat ── */
+  #chat-page{display:none;flex-direction:column;height:calc(100vh - 64px);padding:16px;}
+  #chat-page.active{display:flex;}
+  .chat-header{padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,rgba(129,140,248,.12),rgba(99,102,241,.06));border:1px solid rgba(129,140,248,.2);margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-shrink:0;}
+  .aria-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#818cf8,#6366f1);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(129,140,248,.4);flex-shrink:0;position:relative;}
+  .online-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--bg);box-shadow:0 0 6px var(--green);}
+  #chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:8px;padding-right:4px;}
+  .msg-wrap{display:flex;flex-direction:column;}
+  .msg-wrap.user{align-items:flex-end;}
+  .msg-wrap.ai{align-items:flex-start;}
+  .msg-label{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+  .aria-mini{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,#818cf8,#6366f1);display:flex;align-items:center;justify-content:center;font-size:10px;}
+  .bubble{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.75;max-width:85%;}
+  .bubble.user{background:linear-gradient(135deg,#0284c7,#0369a1);border-bottom-right-radius:4px;}
+  .bubble.ai{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-bottom-left-radius:4px;}
+  .typing-dots{display:flex;gap:5px;align-items:center;padding:14px 18px;}
+  .typing-dot{width:7px;height:7px;border-radius:50%;background:#818cf8;animation:glow-pulse 1.2s ease infinite;}
+  .typing-dot:nth-child(2){animation-delay:.2s;}
+  .typing-dot:nth-child(3){animation-delay:.4s;}
+  #suggestions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;flex-shrink:0;}
+  .sugg-btn{padding:7px 13px;border-radius:20px;border:1px solid rgba(129,140,248,.3);background:rgba(129,140,248,.08);color:#a5b4fc;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .sugg-btn:hover{background:rgba(129,140,248,.18);}
+  #chat-input-wrap{display:flex;gap:10px;flex-shrink:0;align-items:flex-end;}
+  #chat-input{flex:1;min-height:48px;max-height:120px;border-radius:12px;padding:13px 14px;overflow-y:auto;}
+  #chat-send{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;padding:0;}
+  .chat-footer{font-size:11px;color:rgba(240,246,255,.2);text-align:center;margin-top:8px;flex-shrink:0;}
+
+  /* ── Hero ── */
+  .hero{text-align:center;padding:36px 0 48px;position:relative;}
+  .hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;border:1px solid rgba(56,189,248,.3);background:rgba(56,189,248,.08);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:20px;}
+  .hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(32px,6vw,56px);line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#f0f6ff 30%,#38bdf8 70%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero-sub{font-size:16px;color:var(--muted);max-width:520px;margin:0 auto 32px;line-height:1.7;}
+  .hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(ellipse,rgba(56,189,248,.07) 0%,transparent 70%);pointer-events:none;}
+  .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+  /* ── Misc ── */
+  .disclaimer{margin-top:20px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--dim);}
+  .filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  .filter-row .input-field{flex:1;min-width:160px;}
+  .filter-row select.input-field{flex:0 0 auto;width:auto;}
+  .empty{grid-column:1/-1;text-align:center;padding:50px;color:var(--dim);font-size:14px;}
+  .flag{font-size:26px;flex-shrink:0;}
+  .country-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;}
+  .portal-name{font-weight:700;font-size:15px;color:var(--text);}
+  .portal-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+  .tags-row{display:flex;flex-wrap:wrap;gap:5px;}
+  .page-section{display:none;}
+  .page-section.active{display:block;}
+  #chat-wrap{display:none;max-width:720px;margin:0 auto;}
+  #chat-wrap.active{display:flex;flex-direction:column;height:calc(100vh - 64px);padding:16px;}
+
+  /* ── Animations ── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes glow-pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes notif-in{from{opacity:0;transform:translateX(100px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .fade-up{animation:fadeUp .4s ease forwards;}
+  .spin{animation:spin 1s linear infinite;display:inline-block;}
+
+  /* ── Responsive ── */
+  @media(max-width:768px){
+    .nav-links{display:none;}
+    .hamburger{display:block;}
+    .portal-card,.bid-card{padding:15px;}
+    .bubble{max-width:92%;}
+    .head-title{font-size:20px;}
+    .section-head{padding:16px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="particles"></canvas>
+
+  <!-- Notification -->
+  <div id="notif"></div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <div class="nav-logo">
+      <div class="logo-icon">🌐</div>
+      <span class="logo-text">GlobalPortalPro</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item active" data-page="home"><span>◉</span> Home</div>
+      <div class="nav-item" data-page="jobs"><span>💼</span> Jobs</div>
+      <div class="nav-item" data-page="visa"><span>🛂</span> Visas</div>
+      <div class="nav-item" data-page="pr"><span>🏠</span> Residence</div>
+      <div class="nav-item" data-page="asylum"><span>🕊️</span> Asylum</div>
+      <div class="nav-item" data-page="bids"><span>📋</span> Gov Bids</div>
+      <div class="nav-item" data-page="chat"><span>✦</span> AI Guide</div>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu">
+    <div class="mobile-nav-item active" data-page="home"><span>◉</span> Home</div>
+    <div class="mobile-nav-item" data-page="jobs"><span>💼</span> Jobs</div>
+    <div class="mobile-nav-item" data-page="visa"><span>🛂</span> Visas</div>
+    <div class="mobile-nav-item" data-page="pr"><span>🏠</span> Residence</div>
+    <div class="mobile-nav-item" data-page="asylum"><span>🕊️</span> Asylum</div>
+    <div class="mobile-nav-item" data-page="bids"><span>📋</span> Gov Bids</div>
+    <div class="mobile-nav-item" data-page="chat"><span>✦</span> AI Guide</div>
+  </div>
+
+  <div id="main">
+
+    <!-- ══ HOME ══ -->
+    <div id="page-home" class="page-section active">
+      <div class="container">
+        <div class="hero fade-up">
+          <div class="hero-glow"></div>
+          <div class="hero-badge">✦ Global Mobility Platform</div>
+          <h1 class="hero-title">Your Gateway to<br/>Global Opportunities</h1>
+          <p class="hero-sub">Find official job portals, visa applications, permanent residence pathways, asylum resources, and government contract bids — all in one place.</p>
+          <div class="hero-btns">
+            <button class="btn btn-indigo" data-page="chat">✦ Ask AI Guide</button>
+            <button class="btn btn-ghost" data-page="bids">📋 View Gov Bids</button>
+          </div>
+        </div>
+
+        <div class="grid-stats" style="margin-bottom:40px">
+          <div class="stat-card"><div class="stat-num">40+</div><div class="stat-lbl">Official Portals</div></div>
+          <div class="stat-card"><div class="stat-num">190+</div><div class="stat-lbl">Countries Covered</div></div>
+          <div class="stat-card"><div class="stat-num">100+</div><div class="stat-lbl">Active Bids</div></div>
+          <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-lbl">AI Support</div></div>
+        </div>
+
+        <div style="font-size:12px;font-weight:600;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;">Explore by Category</div>
+        <div class="grid-quick" style="margin-bottom:40px" id="quick-nav"></div>
+
+        <div class="preview-box">
+          <div class="preview-head">
+            <div>
+              <div style="font-weight:700;font-size:15px;margin-bottom:2px">📍 Bids Near You — <span id="home-region" style="color:var(--cyan)">Detecting...</span></div>
+              <div style="font-size:12px;color:var(--muted)">Top government contract opportunities in your region</div>
+            </div>
+            <button class="btn btn-ghost" data-page="bids" style="font-size:12px;padding:7px 14px">View All →</button>
+          </div>
+          <div id="home-bids-preview" style="padding:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PORTAL PAGES ══ -->
+    <div id="page-jobs" class="page-section"><div class="container" id="content-jobs"></div></div>
+    <div id="page-visa" class="page-section"><div class="container" id="content-visa"></div></div>
+    <div id="page-pr" class="page-section"><div class="container" id="content-pr"></div></div>
+    <div id="page-asylum" class="page-section"><div class="container" id="content-asylum"></div></div>
+
+    <!-- ══ BIDS ══ -->
+    <div id="page-bids" class="page-section">
+      <div class="container">
+        <div class="section-head" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2)">
+          <div class="head-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">📋</div>
+          <div style="flex:1">
+            <div class="head-title" style="background:linear-gradient(90deg,#ef4444,#f97316)">Government Contract Bids</div>
+            <div class="head-sub">📍 Filtered for your location — <span id="bids-region-label">Detecting…</span></div>
+          </div>
+        </div>
+        <div class="region-pills" id="region-pills"></div>
+        <div class="filter-row" style="margin-top:16px">
+          <input class="input-field" id="bids-search" placeholder="🔍 Search bids by title or category…"/>
+        </div>
+        <div class="grid-bids" id="bids-grid"></div>
+        <div class="disclaimer">ℹ️ Bids are sourced from official government procurement portals. Values and deadlines may change — always verify on the official portal before submitting.</div>
+      </div>
+    </div>
+
+    <!-- ══ AI CHAT ══ -->
+    <div id="page-chat" class="page-section">
+      <div id="chat-wrap">
+        <div class="chat-header">
+          <div class="aria-avatar">✦<div class="online-dot"></div></div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px;background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Aria — AI Immigration Guide</div>
+            <div style="font-size:12px;color:var(--muted)">Powered by Claude · Expert in global mobility & immigration</div>
+          </div>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="suggestions">
+          <button class="sugg-btn" onclick="useSugg(this)">How do I apply for Canada PR?</button>
+          <button class="sugg-btn" onclick="useSugg(this)">Best countries for asylum seekers?</button>
+          <button class="sugg-btn" onclick="useSugg(this)">I'm a nurse — where can I work abroad?</button>
+          <button class="sugg-btn" onclick="useSugg(this)">Find government bids in Europe</button>
+        </div>
+        <div id="chat-input-wrap">
+          <textarea class="input-field" id="chat-input" rows="1" placeholder="Ask Aria anything about jobs, visas, asylum, residence, or bids…"></textarea>
+          <button class="btn btn-indigo" id="chat-send" onclick="sendChat()">↑</button>
+        </div>
+        <div class="chat-footer">General guidance only · Not legal advice · Always verify with official sources</div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════
+const PORTALS = {
+  jobs:[
+    {country:"United States",flag:"🇺🇸",name:"USAJOBS",desc:"Official US federal government jobs portal",url:"https://www.usajobs.gov",tags:["Federal","Government"]},
+    {country:"United Kingdom",flag:"🇬🇧",name:"Find a Job UK",desc:"UK government national employment service",url:"https://www.gov.uk/find-a-job",tags:["Official","Gov"]},
+    {country:"Canada",flag:"🇨🇦",name:"Job Bank Canada",desc:"Canada's national employment site",url:"https://www.jobbank.gc.ca",tags:["Official","Gov"]},
+    {country:"Australia",flag:"🇦🇺",name:"Workforce Australia",desc:"Australian government employment service",url:"https://www.workforceaustralia.gov.au",tags:["Official"]},
+    {country:"Germany",flag:"🇩🇪",name:"Bundesagentur",desc:"Germany's Federal Employment Agency portal",url:"https://www.arbeitsagentur.de/jobsuche",tags:["Official","EU"]},
+    {country:"New Zealand",flag:"🇳🇿",name:"Work & Income NZ",desc:"New Zealand government employment service",url:"https://www.workandincome.govt.nz",tags:["Official"]},
+    {country:"Netherlands",flag:"🇳🇱",name:"Werk.nl",desc:"Dutch national employment portal",url:"https://www.werk.nl",tags:["EU","Official"]},
+    {country:"Ireland",flag:"🇮🇪",name:"Jobs Ireland",desc:"Ireland government employment portal",url:"https://www.jobsireland.ie",tags:["EU","Official"]},
+    {country:"Singapore",flag:"🇸🇬",name:"MyCareersFuture",desc:"Singapore's national jobs portal",url:"https://www.mycareersfuture.gov.sg",tags:["Asia","Official"]},
+    {country:"UAE",flag:"🇦🇪",name:"UAE Careers Portal",desc:"Federal Authority for Government HR UAE",url:"https://www.fahr.gov.ae",tags:["Gulf","Official"]},
+  ],
+  visa:[
+    {country:"United States",flag:"🇺🇸",name:"Travel.State.Gov",desc:"Official US visa information & applications",url:"https://travel.state.gov/content/travel/en/us-visas.html",tags:["Work","Tourist","Student"]},
+    {country:"United Kingdom",flag:"🇬🇧",name:"UK Visas & Immigration",desc:"Apply for skilled worker, student & tourist visas",url:"https://www.gov.uk/browse/visas-immigration",tags:["Work","Student"]},
+    {country:"Canada",flag:"🇨🇦",name:"IRCC Canada",desc:"Immigration, Refugees & Citizenship Canada",url:"https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html",tags:["Work","Tourist"]},
+    {country:"Australia",flag:"🇦🇺",name:"ImmiAccount",desc:"Australian visa application portal",url:"https://online.immi.gov.au/lusc/login",tags:["Work","Student"]},
+    {country:"Germany",flag:"🇩🇪",name:"Videx National",desc:"German consular visa application system",url:"https://videx-national.diplo.de",tags:["Work","Schengen"]},
+    {country:"Schengen/EU",flag:"🇪🇺",name:"Schengen eVisa Info",desc:"EU Schengen area short-stay visa platform",url:"https://www.schengenvisainfo.com/schengen-visa-application-form/",tags:["Tourist","Short-Stay"]},
+    {country:"Japan",flag:"🇯🇵",name:"MOFA Japan Visa",desc:"Ministry of Foreign Affairs Japan visa info",url:"https://www.mofa.go.jp/j_info/visit/visa/index.html",tags:["Tourist","Work"]},
+    {country:"UAE",flag:"🇦🇪",name:"ICP UAE Visa",desc:"UAE official visa & residence portal",url:"https://icp.gov.ae",tags:["Work","Tourist"]},
+    {country:"New Zealand",flag:"🇳🇿",name:"Immigration NZ",desc:"NZ visa and permit applications",url:"https://www.immigration.govt.nz/new-zealand-visas",tags:["Work","Student"]},
+    {country:"Ireland",flag:"🇮🇪",name:"INIS Ireland",desc:"Irish Naturalization & Immigration Service",url:"https://www.irishimmigration.ie",tags:["Work","EU"]},
+  ],
+  pr:[
+    {country:"Canada",flag:"🇨🇦",name:"Express Entry",desc:"Canada's flagship permanent residence program",url:"https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html",tags:["Skilled","Points"]},
+    {country:"Australia",flag:"🇦🇺",name:"SkillSelect",desc:"Australia's skilled migration selection platform",url:"https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect",tags:["Skilled","Points"]},
+    {country:"New Zealand",flag:"🇳🇿",name:"Skilled Migrant NZ",desc:"NZ permanent residence for skilled workers",url:"https://www.immigration.govt.nz/new-zealand-visas/apply-for-a-visa/about-visa/skilled-migrant-category-resident-visa",tags:["Skilled","Points"]},
+    {country:"United Kingdom",flag:"🇬🇧",name:"Indefinite Leave to Remain",desc:"UK permanent settlement application",url:"https://www.gov.uk/indefinite-leave-to-remain",tags:["Settlement","ILR"]},
+    {country:"Germany",flag:"🇩🇪",name:"Niederlassungserlaubnis",desc:"German permanent settlement & Blue Card",url:"https://www.bamf.de/EN/Themen/MigrationAufenthalt/ZuwandererDrittstaaten/Arbeit/NiederlassungserlaubnisBlueCardEU/niederlassungserlaubnis-blue-card-eu-node.html",tags:["Blue Card","Settlement"]},
+    {country:"United States",flag:"🇺🇸",name:"Green Card – USCIS",desc:"US permanent resident card applications",url:"https://www.uscis.gov/green-card",tags:["Green Card","Family","Employment"]},
+    {country:"Portugal",flag:"🇵🇹",name:"ARI Golden Visa",desc:"Portugal residency by investment program",url:"https://imigrante.sef.pt/en/",tags:["Investment","Golden Visa"]},
+    {country:"Sweden",flag:"🇸🇪",name:"Sweden PR",desc:"Swedish Migration Agency permanent residency",url:"https://www.migrationsverket.se/English/Private-individuals",tags:["Settlement","EU"]},
+  ],
+  asylum:[
+    {country:"United States",flag:"🇺🇸",name:"USCIS Asylum",desc:"Apply for asylum protection in the US",url:"https://www.uscis.gov/humanitarian/refugees-and-asylum/asylum",tags:["Refugee","Protection"]},
+    {country:"United Kingdom",flag:"🇬🇧",name:"UK Asylum Claim",desc:"Claim asylum & get refugee status in the UK",url:"https://www.gov.uk/claim-asylum",tags:["Refugee","Protection"]},
+    {country:"Canada",flag:"🇨🇦",name:"IRB Canada Asylum",desc:"Canada's refugee protection system",url:"https://irb.gc.ca/en/Pages/index.aspx",tags:["Refugee","IRB"]},
+    {country:"Germany",flag:"🇩🇪",name:"BAMF Germany",desc:"German Federal Office for Migration & Refugees",url:"https://www.bamf.de/EN/Themen/AsylFluechtlingsschutz/asylfluechtlingsschutz-node.html",tags:["Refugee","Protection"]},
+    {country:"Australia",flag:"🇦🇺",name:"Refugee & Humanitarian AU",desc:"Australia refugee & humanitarian visa program",url:"https://immi.homeaffairs.gov.au/what-we-do/refugee-and-humanitarian-program/about-the-program",tags:["Refugee","Humanitarian"]},
+    {country:"Sweden",flag:"🇸🇪",name:"Sweden Asylum",desc:"Apply for asylum via Migrationsverket Sweden",url:"https://www.migrationsverket.se/English/Private-individuals/Protection-and-asylum-in-Sweden.html",tags:["Nordic","Refugee"]},
+    {country:"France",flag:"🇫🇷",name:"OFPRA France",desc:"French Office for Refugee Protection",url:"https://www.ofpra.gouv.fr/en",tags:["Refugee","EU"]},
+    {country:"Netherlands",flag:"🇳🇱",name:"IND Netherlands",desc:"Dutch Immigration & Naturalisation asylum",url:"https://ind.nl/en/asylum",tags:["EU","Refugee"]},
+    {country:"Global",flag:"🌍",name:"UNHCR Refugee Agency",desc:"UN global refugee registration & resettlement",url:"https://www.unhcr.org/get-involved/asylum-seekers",tags:["UN","International"]},
+    {country:"Ireland",flag:"🇮🇪",name:"IPAS Ireland",desc:"International Protection Accommodation Service",url:"https://www.gov.ie/en/organisation/international-protection-accommodation-service/",tags:["EU","Refugee"]},
+  ],
+};
+
+const BIDS = {
+  "North America":[
+    {id:"B001",title:"IT Infrastructure Modernization",agency:"Dept. of Homeland Security",country:"🇺🇸 USA",value:"$48M",deadline:"Apr 15, 2026",category:"Technology",url:"https://sam.gov"},
+    {id:"B002",title:"National Healthcare Data Systems",agency:"Health Canada",country:"🇨🇦 Canada",value:"CA$31M",deadline:"Apr 28, 2026",category:"Healthcare IT",url:"https://buyandsell.gc.ca"},
+    {id:"B003",title:"Border Patrol Equipment Supply",agency:"CBP – US Customs",country:"🇺🇸 USA",value:"$12.5M",deadline:"May 5, 2026",category:"Defense & Security",url:"https://sam.gov"},
+    {id:"B004",title:"Indigenous Community Infrastructure",agency:"Crown-Indigenous Affairs",country:"🇨🇦 Canada",value:"CA$22M",deadline:"May 12, 2026",category:"Construction",url:"https://buyandsell.gc.ca"},
+    {id:"B005",title:"Smart City Pilot Program",agency:"Dept. of Transportation",country:"🇺🇸 USA",value:"$9.2M",deadline:"May 20, 2026",category:"Urban Planning",url:"https://sam.gov"},
+  ],
+  "Europe":[
+    {id:"B006",title:"EU Climate Monitoring Satellites",agency:"European Space Agency",country:"🇪🇺 EU",value:"€85M",deadline:"Apr 18, 2026",category:"Aerospace",url:"https://esastar.sso.esa.int"},
+    {id:"B007",title:"Digital ID Infrastructure UK",agency:"Government Digital Service",country:"🇬🇧 UK",value:"£28M",deadline:"Apr 25, 2026",category:"Technology",url:"https://www.contractsfinder.service.gov.uk"},
+    {id:"B008",title:"Renewable Energy Grid Expansion",agency:"Bundesnetzagentur",country:"🇩🇪 Germany",value:"€140M",deadline:"May 3, 2026",category:"Energy",url:"https://www.dtvp.de"},
+    {id:"B009",title:"Public Transport Electrification",agency:"Dept. of Transport France",country:"🇫🇷 France",value:"€67M",deadline:"May 10, 2026",category:"Transport",url:"https://www.marches-publics.gouv.fr"},
+    {id:"B010",title:"Cybersecurity National SOC",agency:"NCSC Netherlands",country:"🇳🇱 Netherlands",value:"€19M",deadline:"May 18, 2026",category:"Cybersecurity",url:"https://www.tenderned.nl"},
+  ],
+  "Asia Pacific":[
+    {id:"B011",title:"Smart Manufacturing Initiative",agency:"Dept. of Industry AU",country:"🇦🇺 Australia",value:"AU$55M",deadline:"Apr 20, 2026",category:"Manufacturing",url:"https://www.tenders.gov.au"},
+    {id:"B012",title:"National Broadband Expansion NZ",agency:"MBIE New Zealand",country:"🇳🇿 NZ",value:"NZ$38M",deadline:"Apr 30, 2026",category:"Telecom",url:"https://www.gets.govt.nz"},
+    {id:"B013",title:"Public Health Data Platform SG",agency:"Ministry of Health Singapore",country:"🇸🇬 Singapore",value:"S$24M",deadline:"May 8, 2026",category:"Healthcare IT",url:"https://www.gebiz.gov.sg"},
+    {id:"B014",title:"Smart Port Infrastructure",agency:"Ministry of Land JP",country:"🇯🇵 Japan",value:"¥4.2B",deadline:"May 15, 2026",category:"Maritime",url:"https://www.jetro.go.jp/en/"},
+    {id:"B015",title:"Digital Agriculture Platform",agency:"DAFF Australia",country:"🇦🇺 Australia",value:"AU$18M",deadline:"May 22, 2026",category:"AgriTech",url:"https://www.tenders.gov.au"},
+  ],
+  "Middle East & Africa":[
+    {id:"B016",title:"Smart City Neom Infrastructure",agency:"Saudi Vision 2030",country:"🇸🇦 Saudi Arabia",value:"$320M",deadline:"Apr 22, 2026",category:"Construction",url:"https://www.etimad.sa"},
+    {id:"B017",title:"Dubai Digital Economy Platform",agency:"Dubai Economy & Tourism",country:"🇦🇪 UAE",value:"AED 180M",deadline:"May 1, 2026",category:"Technology",url:"https://www.mot.gov.ae"},
+    {id:"B018",title:"Pan-African Fibre Optic Network",agency:"African Development Bank",country:"🌍 Africa",value:"$95M",deadline:"May 9, 2026",category:"Telecom",url:"https://www.afdb.org/en/projects-and-operations/procurement"},
+    {id:"B019",title:"South Africa Renewable Grid",agency:"Eskom & Dept. Energy",country:"🇿🇦 South Africa",value:"R 4.8B",deadline:"May 16, 2026",category:"Energy",url:"https://www.etenders.gov.za"},
+    {id:"B020",title:"Nigeria Digital ID Infrastructure",agency:"NIMC Nigeria",country:"🇳🇬 Nigeria",value:"₦85B",deadline:"May 24, 2026",category:"Technology",url:"https://www.nimc.gov.ng"},
+  ],
+  "Latin America":[
+    {id:"B021",title:"Amazonia Digital Connectivity",agency:"Ministerio Ciência BR",country:"🇧🇷 Brazil",value:"R$420M",deadline:"Apr 24, 2026",category:"Telecom",url:"https://comprasnet.gov.br"},
+    {id:"B022",title:"Metro Rail Expansion Santiago",agency:"Metro de Santiago",country:"🇨🇱 Chile",value:"$78M",deadline:"May 6, 2026",category:"Transport",url:"https://www.mercadopublico.cl"},
+    {id:"B023",title:"e-Government Modernization",agency:"Ministerio Hacienda CO",country:"🇨🇴 Colombia",value:"$35M",deadline:"May 13, 2026",category:"Technology",url:"https://www.colombiacompra.gov.co"},
+    {id:"B024",title:"National Water Grid",agency:"CONAGUA Mexico",country:"🇲🇽 Mexico",value:"MX$8.2B",deadline:"May 21, 2026",category:"Infrastructure",url:"https://www.gob.mx/compranet"},
+  ],
+};
+
+const REGION_MAP={"US":"North America","CA":"North America","MX":"Latin America","GB":"Europe","DE":"Europe","FR":"Europe","NL":"Europe","IE":"Europe","SE":"Europe","PT":"Europe","ES":"Europe","IT":"Europe","AU":"Asia Pacific","NZ":"Asia Pacific","SG":"Asia Pacific","JP":"Asia Pacific","AE":"Middle East & Africa","SA":"Middle East & Africa","NG":"Middle East & Africa","ZA":"Middle East & Africa","BR":"Latin America","CL":"Latin America","CO":"Latin America"};
+
+const CAT_CFG={
+  jobs:{from:"#0ea5e9",to:"#0284c7",glow:"rgba(14,165,233,0.3)",icon:"💼",label:"Jobs Abroad",sub:"Gov portals"},
+  visa:{from:"#8b5cf6",to:"#7c3aed",glow:"rgba(139,92,246,0.3)",icon:"🛂",label:"Visa Apply",sub:"Official forms"},
+  pr:{from:"#10b981",to:"#059669",glow:"rgba(16,185,129,0.3)",icon:"🏠",label:"Permanent Res.",sub:"Settle legally"},
+  asylum:{from:"#f59e0b",to:"#d97706",glow:"rgba(245,158,11,0.3)",icon:"🕊️",label:"Seek Asylum",sub:"Legal protection"},
+  bids:{from:"#ef4444",to:"#dc2626",glow:"rgba(239,68,68,0.3)",icon:"📋",label:"Gov Bids",sub:"Win contracts"},
+  chat:{from:"#818cf8",to:"#6366f1",glow:"rgba(129,140,248,0.3)",icon:"✦",label:"AI Guide",sub:"Ask Aria"},
+};
+
+const BID_COLORS={"Technology":"#0ea5e9","Healthcare IT":"#10b981","Defense & Security":"#ef4444","Construction":"#f59e0b","Urban Planning":"#8b5cf6","Aerospace":"#06b6d4","Energy":"#f59e0b","Transport":"#10b981","Cybersecurity":"#ef4444","Manufacturing":"#0ea5e9","Telecom":"#8b5cf6","Maritime":"#06b6d4","AgriTech":"#10b981","Infrastructure":"#f59e0b"};
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let currentPage="home";
+let userRegion="North America";
+let activeBidRegion="North America";
+let chatHistory=[];
+let chatLoading=false;
+
+// ═══════════════════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById("particles");
+  const ctx=canvas.getContext("2d");
+  let w,h,pts=[];
+  function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
+  function init(){
+    resize();
+    pts=Array.from({length:60},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5}));
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>w)p.vx*=-1;
+      if(p.y<0||p.y>h)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle="rgba(56,189,248,0.5)";ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(56,189,248,${.12*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke();}
+    }
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+  window.addEventListener("resize",resize);
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function navigate(page){
+  currentPage=page;
+  document.querySelectorAll(".page-section").forEach(el=>el.classList.remove("active"));
+  document.getElementById("page-"+page).classList.add("active");
+  document.querySelectorAll(".nav-item,.mobile-nav-item").forEach(el=>{
+    el.classList.toggle("active",el.dataset.page===page);
+  });
+  document.getElementById("mobile-menu").classList.remove("open");
+  document.getElementById("hamburger").textContent="☰";
+  if(page==="chat") setupChatLayout();
+  if(page==="bids") renderBids();
+  window.scrollTo(0,0);
+}
+
+// Hamburger
+document.getElementById("hamburger").addEventListener("click",function(){
+  const mm=document.getElementById("mobile-menu");
+  const open=mm.classList.toggle("open");
+  this.textContent=open?"✕":"☰";
+});
+
+// Nav clicks
+document.querySelectorAll("[data-page]").forEach(el=>{
+  el.addEventListener("click",()=>navigate(el.dataset.page));
+});
+
+// ═══════════════════════════════════════════════════════════
+//  NOTIFICATION
+// ═══════════════════════════════════════════════════════════
+let notifTimer;
+function showNotif(msg){
+  const el=document.getElementById("notif");
+  el.textContent=msg;el.style.display="block";
+  clearTimeout(notifTimer);
+  notifTimer=setTimeout(()=>{el.style.display="none";},5000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOCATION DETECTION
+// ═══════════════════════════════════════════════════════════
+fetch("https://ipapi.co/json/")
+  .then(r=>r.json())
+  .then(d=>{
+    const region=REGION_MAP[d.country_code]||"North America";
+    userRegion=region;activeBidRegion=region;
+    const loc=d.city||d.country_name||"your area";
+    showNotif(`📍 Location detected: ${loc} — Bids filtered for ${region}`);
+    renderHomeBids();
+    renderBids();
+    document.getElementById("home-region").textContent=region;
+    document.getElementById("bids-region-label").textContent=region;
+  })
+  .catch(()=>{renderHomeBids();renderBids();});
+
+// ═══════════════════════════════════════════════════════════
+//  HOME PAGE RENDER
+// ═══════════════════════════════════════════════════════════
+(function buildQuickNav(){
+  const wrap=document.getElementById("quick-nav");
+  ["jobs","visa","pr","asylum","bids","chat"].forEach(id=>{
+    const c=CAT_CFG[id];
+    const d=document.createElement("div");
+    d.className="quick-btn";d.dataset.page=id;
+    d.innerHTML=`<div class="q-icon" style="background:linear-gradient(135deg,${c.from},${c.to});box-shadow:0 4px 15px ${c.glow}">${c.icon}</div><div class="q-label">${c.label}</div><div class="q-sub">${c.sub}</div>`;
+    d.addEventListener("click",()=>navigate(id));
+    wrap.appendChild(d);
+  });
+})();
+
+function renderHomeBids(){
+  const preview=document.getElementById("home-bids-preview");
+  const bids=(BIDS[userRegion]||[]).slice(0,3);
+  preview.innerHTML=bids.map(b=>`
+    <div class="preview-row">
+      <div style="flex:1;min-width:160px">
+        <div style="font-weight:600;font-size:13px;margin-bottom:2px">${b.title}</div>
+        <div style="font-size:11px;color:var(--muted)">${b.country} · ${b.agency}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="color:var(--green);font-weight:700;font-size:13px">${b.value}</div>
+        <div style="font-size:11px;color:var(--dim)">Due ${b.deadline}</div>
+      </div>
+    </div>`).join("");
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PORTAL PAGES
+// ═══════════════════════════════════════════════════════════
+["jobs","visa","pr","asylum"].forEach(cat=>{
+  const c=CAT_CFG[cat];
+  const container=document.getElementById("content-"+cat);
+  const countries=["All",...new Set(PORTALS[cat].map(p=>p.country))];
+
+  container.innerHTML=`
+    <div class="section-head fade-up" style="background:linear-gradient(135deg,${c.from}18,${c.to}08);border:1px solid ${c.from}30">
+      <div class="head-icon" style="background:linear-gradient(135deg,${c.from},${c.to});box-shadow:0 4px 15px ${c.glow}">${c.icon}</div>
+      <div>
+        <div class="head-title" style="background:linear-gradient(90deg,${c.from},${c.to})">${c.label}</div>
+        <div class="head-sub">Official government portals — verified sources only</div>
+      </div>
+    </div>
+    <div class="filter-row">
+      <input class="input-field" id="search-${cat}" placeholder="🔍 Search ${cat} portals…"/>
+      <select class="input-field" id="country-${cat}">${countries.map(cn=>`<option>${cn}</option>`).join("")}</select>
+    </div>
+    <div class="grid-auto fade-up" id="grid-${cat}"></div>
+    <div class="disclaimer">🔒 All links direct to official government websites. Always verify URLs before submitting personal information. This is not legal advice.</div>`;
+
+  function render(){
+    const q=document.getElementById("search-"+cat).value.toLowerCase();
+    const country=document.getElementById("country-"+cat).value;
+    const filtered=PORTALS[cat].filter(p=>
+      (country==="All"||p.country===country)&&
+      (!q||p.name.toLowerCase().includes(q)||p.country.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q))
+    );
+    const grid=document.getElementById("grid-"+cat);
+    if(!filtered.length){grid.innerHTML=`<div class="empty">No portals match your search.</div>`;return;}
+    grid.innerHTML=filtered.map(p=>`
+      <div class="portal-card">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span class="flag">${p.flag}</span>
+          <div style="flex:1">
+            <div class="country-lbl" style="color:${c.from}">${p.country}</div>
+            <div class="portal-name">${p.name}</div>
+          </div>
+        </div>
+        <p class="portal-desc">${p.desc}</p>
+        <div class="tags-row">${p.tags.map(t=>`<span class="tag" style="background:${c.from}18;border:1px solid ${c.from}35;color:${c.from}">${t}</span>`).join("")}</div>
+        <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(135deg,${c.from},${c.to});color:#fff;font-size:12px;box-shadow:0 4px 12px ${c.glow}">Visit Portal ↗</a>
+      </div>`).join("");
+  }
+  render();
+  document.getElementById("search-"+cat).addEventListener("input",render);
+  document.getElementById("country-"+cat).addEventListener("change",render);
+});
+
+// ═══════════════════════════════════════════════════════════
+//  BIDS
+// ═══════════════════════════════════════════════════════════
+(function buildRegionPills(){
+  const wrap=document.getElementById("region-pills");
+  Object.keys(BIDS).forEach(r=>{
+    const btn=document.createElement("button");
+    btn.className="region-pill"+(r===activeBidRegion?" active":"");
+    btn.textContent=r;
+    btn.addEventListener("click",()=>{
+      activeBidRegion=r;
+      document.getElementById("bids-region-label").textContent=r;
+      document.querySelectorAll(".region-pill").forEach(b=>b.classList.toggle("active",b.textContent===r));
+      renderBids();
+    });
+    wrap.appendChild(btn);
+  });
+})();
+
+document.getElementById("bids-search").addEventListener("input",renderBids);
+
+function renderBids(){
+  const q=document.getElementById("bids-search").value.toLowerCase();
+  const bids=(BIDS[activeBidRegion]||[]).filter(b=>!q||b.title.toLowerCase().includes(q)||b.category.toLowerCase().includes(q));
+  const grid=document.getElementById("bids-grid");
+  if(!bids.length){grid.innerHTML=`<div class="empty">No bids found.</div>`;return;}
+  grid.innerHTML=bids.map(b=>{
+    const col=BID_COLORS[b.category]||"#38bdf8";
+    return`<div class="bid-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span style="font-size:13px;font-weight:600;color:var(--muted)">${b.country}</span>
+        <span class="tag" style="background:${col}18;border:1px solid ${col}35;color:${col}">${b.category}</span>
+      </div>
+      <div style="font-weight:700;font-size:15px;color:var(--text);line-height:1.4">${b.title}</div>
+      <div style="font-size:12px;color:var(--muted)">${b.agency}</div>
+      <div class="bid-meta">
+        <div><div style="font-size:10px;color:var(--dim);margin-bottom:2px">CONTRACT VALUE</div><div class="bid-value">${b.value}</div></div>
+        <div style="text-align:right"><div style="font-size:10px;color:var(--dim);margin-bottom:2px">DEADLINE</div><div class="bid-deadline">${b.deadline}</div></div>
+      </div>
+      <div class="bid-row">
+        <span class="status-dot"><span class="dot"></span>Open</span>
+        <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn btn-red" style="font-size:12px">Apply Now ↗</a>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CHAT
+// ═══════════════════════════════════════════════════════════
+function setupChatLayout(){
+  const wrap=document.getElementById("chat-wrap");
+  wrap.style.height=(window.innerHeight-64)+"px";
+  if(chatHistory.length===0) addAIMessage("Hello! I'm **Aria**, your global mobility guide — powered by Claude.\n\nI can help you navigate jobs, visas, permanent residence, asylum, and government contract bids worldwide. Tell me about your situation and where you want to go! 🌍");
+}
+
+window.addEventListener("resize",()=>{
+  if(currentPage==="chat") document.getElementById("chat-wrap").style.height=(window.innerHeight-64)+"px";
+});
+
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function renderMarkdown(text){
+  return escapeHtml(text)
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/\n/g,"<br>");
+}
+
+function addAIMessage(text){
+  chatHistory.push({role:"assistant",content:text});
+  const msgs=document.getElementById("chat-messages");
+  const wrap=document.createElement("div");
+  wrap.className="msg-wrap ai";
+  wrap.innerHTML=`<div class="msg-label"><div class="aria-mini">✦</div><span style="font-size:11px;color:var(--dim);font-weight:600">Aria</span></div><div class="bubble ai">${renderMarkdown(text)}</div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function addUserMessage(text){
+  chatHistory.push({role:"user",content:text});
+  const msgs=document.getElementById("chat-messages");
+  const wrap=document.createElement("div");
+  wrap.className="msg-wrap user";
+  wrap.innerHTML=`<div class="bubble user">${escapeHtml(text)}</div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs=document.getElementById("chat-messages");
+  const el=document.createElement("div");
+  el.className="msg-wrap ai";el.id="typing-indicator";
+  el.innerHTML=`<div class="msg-label"><div class="aria-mini">✦</div></div><div class="bubble ai"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function removeTyping(){document.getElementById("typing-indicator")?.remove();}
+
+window.useSugg=function(btn){
+  document.getElementById("chat-input").value=btn.textContent;
+  document.getElementById("suggestions").style.display="none";
+  document.getElementById("chat-input").focus();
+};
+
+window.sendChat=async function(){
+  if(chatLoading)return;
+  const inp=document.getElementById("chat-input");
+  const text=inp.value.trim();
+  if(!text)return;
+  inp.value="";
+  document.getElementById("suggestions").style.display="none";
+  addUserMessage(text);
+  chatLoading=true;
+  document.getElementById("chat-send").innerHTML='<span class="spin">⟳</span>';
+  document.getElementById("chat-send").disabled=true;
+  showTyping();
+  try{
+    const messages=chatHistory.slice(-10).map(m=>({role:m.role,content:m.content}));
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        system:`You are Aria, a warm expert global mobility and immigration guide embedded in GlobalPortalPro. Help users with: finding jobs abroad, visa applications (work/student/tourist/family), permanent residence pathways (Express Entry, SkillSelect, Green Card, etc.), asylum and refugee protection, and government contract bid opportunities. Be concise, empathetic, and practical. Use bullet points for steps. Always recommend official government portals. Add emoji for readability. NEVER give legal advice — suggest consulting a qualified immigration lawyer. Keep responses under 250 words unless complexity demands more.`,
+        messages,
+      }),
+    });
+    const data=await res.json();
+    removeTyping();
+    const reply=data.content?.map(b=>b.text||"").join("")||"I couldn't get a response. Please try again.";
+    addAIMessage(reply);
+  }catch(e){
+    removeTyping();
+    addAIMessage("Sorry, I'm having trouble connecting right now. Please try again in a moment.");
+  }
+  chatLoading=false;
+  document.getElementById("chat-send").innerHTML="↑";
+  document.getElementById("chat-send").disabled=false;
+};
+
+document.getElementById("chat-input").addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}
+});
+
+// Auto-resize textarea
+document.getElementById("chat-input").addEventListener("input",function(){
+  this.style.height="auto";
+  this.style.height=Math.min(this.scrollHeight,120)+"px";
+});
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+renderHomeBids();
+renderBids();
+</script>
+</body>
+</html>
